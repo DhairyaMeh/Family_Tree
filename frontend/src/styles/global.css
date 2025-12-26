@@ -1,0 +1,292 @@
+/**
+ * Global Styles for Family Tree Application
+ * 
+ * Design system inspired by enterprise org charts with:
+ * - Dark theme with subtle gradients
+ * - Distinctive typography (Outfit + Crimson Pro)
+ * - Smooth transitions and depth
+ */
+
+/* Reset and base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0a0e17;
+  color: #e2e8f0;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* App container */
+.app-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Background gradient */
+.app-background {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(16, 185, 129, 0.04) 0%, transparent 60%),
+    linear-gradient(180deg, #0a0e17 0%, #111827 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Header */
+.app-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 32px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.app-header h1 {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #f1f5f9;
+  letter-spacing: -0.5px;
+}
+
+.app-header p {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 4px;
+  font-style: italic;
+  font-family: 'Crimson Pro', serif;
+}
+
+/* Tree container */
+.tree-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.tree-container svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Empty state */
+.empty-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.empty-state .empty-icon {
+  font-size: 72px;
+  margin-bottom: 24px;
+  opacity: 0.8;
+}
+
+.empty-state h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 12px;
+}
+
+.empty-state p {
+  font-family: 'Crimson Pro', serif;
+  font-size: 16px;
+  color: #64748b;
+  font-style: italic;
+  margin-bottom: 32px;
+}
+
+/* Primary button */
+.primary-button {
+  padding: 14px 32px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(59, 130, 246, 0.4);
+}
+
+.primary-button:active {
+  transform: translateY(0);
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 14, 23, 0.9);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  gap: 16px;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-overlay span {
+  font-size: 14px;
+  color: #64748b;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Error toast */
+.error-toast {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  background: rgba(239, 68, 68, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-family: 'Outfit', sans-serif;
+  z-index: 300;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Focus styles */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: rgba(59, 130, 246, 0.3);
+  color: #fff;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 16px 20px;
+  }
+  
+  .app-header h1 {
+    font-size: 22px;
+  }
+  
+  .empty-state .empty-icon {
+    font-size: 56px;
+  }
+  
+  .empty-state h2 {
+    font-size: 22px;
+  }
+  
+  .primary-button {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+}
+

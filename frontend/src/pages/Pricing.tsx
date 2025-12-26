@@ -139,7 +139,8 @@ export default function Pricing() {
                 >
                   ✓ Current Plan
                 </div>
-              ) : tier.name === 'Free' && user && (user.tier === 'silver' || user.tier === 'gold' || user.tier === 'admin') ? (
+              ) : (tier.name === 'Free' && user && (user.tier === 'silver' || user.tier === 'gold' || user.tier === 'admin')) ||
+                 (tier.name === 'Silver' && user && (user.tier === 'gold' || user.tier === 'admin')) ? (
                 <div 
                   className="select-btn included"
                   style={{ 

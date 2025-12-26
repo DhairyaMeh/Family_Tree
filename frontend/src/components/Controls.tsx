@@ -101,14 +101,14 @@ export function NavigationControls({
           }}>
             {focusedPerson.name}
           </span>
-          {focusedPerson.birthYear && (
+          {focusedPerson.birthDate && (
             <span style={{
               color: '#64748b',
               fontSize: '14px',
               fontFamily: 'Crimson Pro, serif',
               fontStyle: 'italic',
             }}>
-              (b. {focusedPerson.birthYear})
+              (b. {new Date(focusedPerson.birthDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
             </span>
           )}
         </div>

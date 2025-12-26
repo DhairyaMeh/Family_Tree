@@ -88,7 +88,7 @@ export async function createTree(req: Request, res: Response): Promise<void> {
         name: rootPerson.name,
         gender: rootPerson.gender,
         childrenIds: [],
-        birthYear: rootPerson.birthYear,
+        birthDate: rootPerson.birthDate,
         alive: rootPerson.alive ?? true,
       };
 
@@ -177,7 +177,7 @@ export async function addFirstPerson(req: Request, res: Response): Promise<void>
       name: personData.name,
       gender: personData.gender,
       childrenIds: [],
-      birthYear: personData.birthYear,
+      birthDate: personData.birthDate,
       alive: personData.alive ?? true,
     };
 
@@ -254,7 +254,7 @@ export async function addSpouse(req: Request, res: Response): Promise<void> {
       gender: spouseData.gender,
       spouseId: personId,
       childrenIds: [...person.childrenIds], // Share children with spouse
-      birthYear: spouseData.birthYear,
+      birthDate: spouseData.birthDate,
       alive: spouseData.alive ?? true,
     };
 
@@ -321,7 +321,7 @@ export async function addParent(req: Request, res: Response): Promise<void> {
       name: parentData.name,
       gender: parentData.gender,
       childrenIds: [personId],
-      birthYear: parentData.birthYear,
+      birthDate: parentData.birthDate,
       alive: parentData.alive ?? true,
     };
 
@@ -383,7 +383,7 @@ export async function addChild(req: Request, res: Response): Promise<void> {
       name: childData.name,
       gender: childData.gender,
       childrenIds: [],
-      birthYear: childData.birthYear,
+      birthDate: childData.birthDate,
       alive: childData.alive ?? true,
     };
 
@@ -438,7 +438,7 @@ export async function updatePerson(req: Request, res: Response): Promise<void> {
     // Apply updates
     if (updates.name !== undefined) person.name = updates.name;
     if (updates.gender !== undefined) person.gender = updates.gender;
-    if (updates.birthYear !== undefined) person.birthYear = updates.birthYear;
+    if (updates.birthDate !== undefined) person.birthDate = updates.birthDate;
     if (updates.alive !== undefined) person.alive = updates.alive;
     if (updates.imageUrl !== undefined) person.imageUrl = updates.imageUrl;
 

@@ -107,7 +107,7 @@ async function seed() {
         gender: 'male',
         spouseId: ids.grandmaEleanor,
         childrenIds: [ids.fatherJohn, ids.uncleJames],
-        birthYear: 1940,
+        birthDate: 1940,
         alive: false,
       },
       [ids.grandmaEleanor]: {
@@ -116,7 +116,7 @@ async function seed() {
         gender: 'female',
         spouseId: ids.grandpaHenry,
         childrenIds: [ids.fatherJohn, ids.uncleJames],
-        birthYear: 1942,
+        birthDate: 1942,
         alive: true,
       },
       [ids.grandpaRobert]: {
@@ -125,7 +125,7 @@ async function seed() {
         gender: 'male',
         spouseId: ids.grandmaMartha,
         childrenIds: [ids.motherMary, ids.auntElizabeth],
-        birthYear: 1938,
+        birthDate: 1938,
         alive: false,
       },
       [ids.grandmaMartha]: {
@@ -134,7 +134,7 @@ async function seed() {
         gender: 'female',
         spouseId: ids.grandpaRobert,
         childrenIds: [ids.motherMary, ids.auntElizabeth],
-        birthYear: 1941,
+        birthDate: 1941,
         alive: true,
       },
       [ids.fatherJohn]: {
@@ -143,7 +143,7 @@ async function seed() {
         gender: 'male',
         spouseId: ids.motherMary,
         childrenIds: [ids.childEmma, ids.childOliver, ids.childSophia],
-        birthYear: 1965,
+        birthDate: 1965,
         alive: true,
       },
       [ids.motherMary]: {
@@ -152,7 +152,7 @@ async function seed() {
         gender: 'female',
         spouseId: ids.fatherJohn,
         childrenIds: [ids.childEmma, ids.childOliver, ids.childSophia],
-        birthYear: 1968,
+        birthDate: 1968,
         alive: true,
       },
       [ids.uncleJames]: {
@@ -161,7 +161,7 @@ async function seed() {
         gender: 'male',
         spouseId: ids.auntSarah,
         childrenIds: [ids.cousinLiam, ids.cousinAva],
-        birthYear: 1967,
+        birthDate: 1967,
         alive: true,
       },
       [ids.auntSarah]: {
@@ -170,7 +170,7 @@ async function seed() {
         gender: 'female',
         spouseId: ids.uncleJames,
         childrenIds: [ids.cousinLiam, ids.cousinAva],
-        birthYear: 1970,
+        birthDate: 1970,
         alive: true,
       },
       [ids.auntElizabeth]: {
@@ -179,7 +179,7 @@ async function seed() {
         gender: 'female',
         spouseId: ids.uncleWilliam,
         childrenIds: [ids.cousinNoah],
-        birthYear: 1972,
+        birthDate: 1972,
         alive: true,
       },
       [ids.uncleWilliam]: {
@@ -188,7 +188,7 @@ async function seed() {
         gender: 'male',
         spouseId: ids.auntElizabeth,
         childrenIds: [ids.cousinNoah],
-        birthYear: 1969,
+        birthDate: 1969,
         alive: true,
       },
       [ids.childEmma]: {
@@ -196,7 +196,7 @@ async function seed() {
         name: 'Emma Thompson',
         gender: 'female',
         childrenIds: [ids.grandchildIsabella, ids.grandchildEthan],
-        birthYear: 1990,
+        birthDate: 1990,
         alive: true,
       },
       [ids.childOliver]: {
@@ -204,7 +204,7 @@ async function seed() {
         name: 'Oliver Thompson',
         gender: 'male',
         childrenIds: [],
-        birthYear: 1993,
+        birthDate: 1993,
         alive: true,
       },
       [ids.childSophia]: {
@@ -212,7 +212,7 @@ async function seed() {
         name: 'Sophia Thompson',
         gender: 'female',
         childrenIds: [],
-        birthYear: 1996,
+        birthDate: 1996,
         alive: true,
       },
       [ids.cousinLiam]: {
@@ -220,7 +220,7 @@ async function seed() {
         name: 'Liam Thompson',
         gender: 'male',
         childrenIds: [],
-        birthYear: 1995,
+        birthDate: 1995,
         alive: true,
       },
       [ids.cousinAva]: {
@@ -228,7 +228,7 @@ async function seed() {
         name: 'Ava Thompson',
         gender: 'female',
         childrenIds: [],
-        birthYear: 1998,
+        birthDate: 1998,
         alive: true,
       },
       [ids.cousinNoah]: {
@@ -236,7 +236,7 @@ async function seed() {
         name: 'Noah Anderson',
         gender: 'male',
         childrenIds: [],
-        birthYear: 1997,
+        birthDate: 1997,
         alive: true,
       },
       [ids.grandchildIsabella]: {
@@ -244,7 +244,7 @@ async function seed() {
         name: 'Isabella Martinez',
         gender: 'female',
         childrenIds: [],
-        birthYear: 2015,
+        birthDate: 2015,
         alive: true,
       },
       [ids.grandchildEthan]: {
@@ -252,7 +252,7 @@ async function seed() {
         name: 'Ethan Martinez',
         gender: 'male',
         childrenIds: [],
-        birthYear: 2018,
+        birthDate: 2018,
         alive: true,
       },
     };

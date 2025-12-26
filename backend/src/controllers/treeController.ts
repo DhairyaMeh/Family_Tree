@@ -94,6 +94,37 @@ export async function getTree(req: AuthRequest, res: Response): Promise<void> {
 }
 
 /**
+ * Get a family tree by share token (public endpoint).
+ * Anyone with the share link can view the tree.
+ */
+export async function getTreeByShareToken(req: Request, res: Response): Promise<void> {
+  try {
+    const shareToken = req.query.token as string;
+    
+    if (!shareToken) {
+      res.status(400).json({ success: false, error: 'Share token is required' });
+      return;
+    }
+    
+    const tree = await FamilyTreeModel.findOne({ shareToken });
+
+    if (!tree) {
+      res.status(404).json({ success: false, error: 'Shared tree not found or link is invalid' });
+      return;
+    }
+
+    // Convert Map to plain object
+    const treeObj = tree.toJSON();
+    
+    // Shared trees are always read-only for the link viewer
+    res.json({ success: true, data: { ...treeObj, canEdit: false } });
+  } catch (error) {
+    console.error('Error fetching shared tree:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+}
+
+/**
  * Get all family trees (for listing/selection).
  * Returns user's own trees + public/shared trees
  */

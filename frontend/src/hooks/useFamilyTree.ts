@@ -83,7 +83,8 @@ export function useFamilyTree(): UseFamilyTreeReturn {
     const response = await api.createTree(name, rootPerson);
     
     if (response.success && response.data) {
-      setTree(response.data);
+      // User created this tree, so they can edit it
+      setTree({ ...response.data, canEdit: true });
       setIsLoading(false);
       return response.data._id;
     } else {
@@ -155,7 +156,8 @@ export function useFamilyTree(): UseFamilyTreeReturn {
     const response = await api.addFirstPerson(tree._id, person);
     
     if (response.success && response.data) {
-      setTree(response.data);
+      // Preserve canEdit from current tree state (user was editing, so they can still edit)
+      setTree({ ...response.data, canEdit: tree.canEdit ?? response.data.canEdit });
       setIsLoading(false);
       return true;
     } else {
@@ -180,7 +182,8 @@ export function useFamilyTree(): UseFamilyTreeReturn {
     const response = await api.addSpouse(tree._id, personId, spouse);
     
     if (response.success && response.data) {
-      setTree(response.data);
+      // Preserve canEdit from current tree state
+      setTree({ ...response.data, canEdit: tree.canEdit ?? response.data.canEdit });
       setIsLoading(false);
       return true;
     } else {
@@ -205,7 +208,8 @@ export function useFamilyTree(): UseFamilyTreeReturn {
     const response = await api.addChild(tree._id, personId, child);
     
     if (response.success && response.data) {
-      setTree(response.data);
+      // Preserve canEdit from current tree state
+      setTree({ ...response.data, canEdit: tree.canEdit ?? response.data.canEdit });
       setIsLoading(false);
       return true;
     } else {
@@ -230,7 +234,8 @@ export function useFamilyTree(): UseFamilyTreeReturn {
     const response = await api.addParent(tree._id, personId, parent);
     
     if (response.success && response.data) {
-      setTree(response.data);
+      // Preserve canEdit from current tree state
+      setTree({ ...response.data, canEdit: tree.canEdit ?? response.data.canEdit });
       setIsLoading(false);
       return true;
     } else {
@@ -255,7 +260,8 @@ export function useFamilyTree(): UseFamilyTreeReturn {
     const response = await api.updatePerson(tree._id, personId, updates);
     
     if (response.success && response.data) {
-      setTree(response.data);
+      // Preserve canEdit from current tree state
+      setTree({ ...response.data, canEdit: tree.canEdit ?? response.data.canEdit });
       setIsLoading(false);
       return true;
     } else {
@@ -277,7 +283,8 @@ export function useFamilyTree(): UseFamilyTreeReturn {
     const response = await api.deletePerson(tree._id, personId);
     
     if (response.success && response.data) {
-      setTree(response.data);
+      // Preserve canEdit from current tree state
+      setTree({ ...response.data, canEdit: tree.canEdit ?? response.data.canEdit });
       setIsLoading(false);
       return true;
     } else {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -17,10 +17,96 @@ export default function Profile() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Email verification state
+  const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
+  const [otpValue, setOtpValue] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [verifyError, setVerifyError] = useState('');
+  const [verifySuccess, setVerifySuccess] = useState('');
+  const [verifyLoading, setVerifyLoading] = useState(false);
+
+  // Countdown timer for resend button
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
 
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const handleSendVerificationOtp = async () => {
+    setVerifyError('');
+    setVerifySuccess('');
+    setVerifyLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/auth/resend-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ email: user?.email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send OTP');
+      }
+
+      setOtpSent(true);
+      setResendCooldown(60); // 60 second cooldown
+      setVerifySuccess('OTP sent to your email!');
+    } catch (err) {
+      setVerifyError(err instanceof Error ? err.message : 'Failed to send OTP');
+    } finally {
+      setVerifyLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setVerifyError('');
+    setVerifySuccess('');
+    setVerifyLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/auth/verify-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ email: user?.email, otp: otpValue }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Invalid OTP');
+      }
+
+      // Update user state with verified email
+      if (user) {
+        updateUser({ ...user, isEmailVerified: true });
+      }
+      
+      setVerifySuccess('Email verified successfully!');
+      setIsVerifyingEmail(false);
+      setOtpValue('');
+      setOtpSent(false);
+    } catch (err) {
+      setVerifyError(err instanceof Error ? err.message : 'Verification failed');
+    } finally {
+      setVerifyLoading(false);
+    }
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
@@ -127,9 +213,92 @@ export default function Profile() {
             <div className="info-row">
               <span className="info-label">Email Verified</span>
               <span className="info-value">
-                {user.isEmailVerified ? '✅ Verified' : '❌ Not Verified'}
+                {user.isEmailVerified ? (
+                  '✅ Verified'
+                ) : (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    ❌ Not Verified
+                    {!isVerifyingEmail && (
+                      <button
+                        className="btn-verify-small"
+                        onClick={() => setIsVerifyingEmail(true)}
+                      >
+                        Verify Now
+                      </button>
+                    )}
+                  </span>
+                )}
               </span>
             </div>
+            
+            {/* Email Verification Section */}
+            {!user.isEmailVerified && isVerifyingEmail && (
+              <div className="verify-section">
+                {verifyError && <div className="form-error">{verifyError}</div>}
+                {verifySuccess && <div className="form-success">{verifySuccess}</div>}
+                
+                {!otpSent ? (
+                  <div className="verify-step">
+                    <p>Click below to send a verification code to <strong>{user.email}</strong></p>
+                    <button
+                      className="btn-primary"
+                      onClick={handleSendVerificationOtp}
+                      disabled={verifyLoading}
+                    >
+                      {verifyLoading ? 'Sending...' : 'Send OTP'}
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleVerifyOtp} className="verify-form">
+                    <p>Enter the 6-digit code sent to <strong>{user.email}</strong></p>
+                    <div className="otp-input-group">
+                      <input
+                        type="text"
+                        value={otpValue}
+                        onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        placeholder="Enter 6-digit OTP"
+                        maxLength={6}
+                        className="otp-input"
+                      />
+                      <button
+                        type="submit"
+                        className="btn-primary"
+                        disabled={verifyLoading || otpValue.length !== 6}
+                      >
+                        {verifyLoading ? 'Verifying...' : 'Verify'}
+                      </button>
+                    </div>
+                    <div className="resend-section">
+                      {resendCooldown > 0 ? (
+                        <span className="resend-timer">Resend OTP in {resendCooldown}s</span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn-link"
+                          onClick={handleSendVerificationOtp}
+                          disabled={verifyLoading}
+                        >
+                          Resend OTP
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                )}
+                
+                <button
+                  className="btn-outline btn-small"
+                  onClick={() => {
+                    setIsVerifyingEmail(false);
+                    setOtpSent(false);
+                    setOtpValue('');
+                    setVerifyError('');
+                    setVerifySuccess('');
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
             <div className="info-row">
               <span className="info-label">Subscription</span>
               <span className="info-value" style={{ textTransform: 'capitalize' }}>{user.tier}</span>
@@ -464,6 +633,101 @@ export default function Profile() {
 
         .btn-logout:hover {
           background: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-verify-small {
+          padding: 4px 12px;
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          border: none;
+          border-radius: 4px;
+          color: white;
+          font-size: 12px;
+          cursor: pointer;
+          transition: transform 0.2s;
+        }
+
+        .btn-verify-small:hover {
+          transform: translateY(-1px);
+        }
+
+        .verify-section {
+          margin-top: 16px;
+          padding: 16px;
+          background: rgba(59, 130, 246, 0.1);
+          border: 1px solid rgba(59, 130, 246, 0.2);
+          border-radius: 8px;
+        }
+
+        .verify-step {
+          text-align: center;
+        }
+
+        .verify-step p {
+          margin: 0 0 16px;
+          color: #94a3b8;
+        }
+
+        .verify-form p {
+          margin: 0 0 16px;
+          color: #94a3b8;
+          text-align: center;
+        }
+
+        .otp-input-group {
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+          margin-bottom: 16px;
+        }
+
+        .otp-input {
+          width: 140px;
+          padding: 12px 16px;
+          background: #0f172a;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          color: #f1f5f9;
+          font-size: 18px;
+          text-align: center;
+          letter-spacing: 8px;
+        }
+
+        .otp-input:focus {
+          outline: none;
+          border-color: #3b82f6;
+        }
+
+        .resend-section {
+          text-align: center;
+          margin-bottom: 16px;
+        }
+
+        .resend-timer {
+          color: #64748b;
+          font-size: 14px;
+        }
+
+        .btn-link {
+          background: none;
+          border: none;
+          color: #3b82f6;
+          font-size: 14px;
+          cursor: pointer;
+          text-decoration: underline;
+        }
+
+        .btn-link:hover {
+          color: #60a5fa;
+        }
+
+        .btn-link:disabled {
+          color: #64748b;
+          cursor: not-allowed;
+        }
+
+        .btn-small {
+          padding: 8px 16px;
+          font-size: 12px;
         }
       `}</style>
     </div>

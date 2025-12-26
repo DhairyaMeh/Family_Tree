@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   getTree,
+  getTreeByShareToken,
   getAllTrees,
   createTree,
   updateTree,
@@ -64,6 +65,7 @@ router.put('/auth/profile', authenticate, updateProfile);
 
 // Tree routes (with optional auth to show user's trees)
 router.get('/trees', optionalAuth, getAllTrees);
+router.get('/tree/shared', getTreeByShareToken); // Public route for shared trees
 router.get('/tree/:id', optionalAuth, getTree);
 
 // Tree routes (protected - require authentication)

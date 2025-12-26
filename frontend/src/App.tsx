@@ -264,8 +264,8 @@ export default function App() {
    * Share handler
    */
   const handleShare = useCallback(() => {
-    if (tree) {
-      const shareUrl = `${window.location.origin}/tree/${tree.shareToken || tree._id}`;
+    if (tree && tree.shareToken) {
+      const shareUrl = `${window.location.origin}/shared/${tree.shareToken}`;
       navigator.clipboard.writeText(shareUrl);
       setShowShareToast(true);
       setTimeout(() => setShowShareToast(false), 3000);

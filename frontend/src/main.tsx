@@ -8,6 +8,7 @@ import Pricing from './pages/Pricing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile';
+import SharedTree from './pages/SharedTree';
 
 // Protected route wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -72,7 +73,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/tree" element={<ProtectedRoute><App /></ProtectedRoute>} />
-          <Route path="/tree/:shareToken" element={<App />} />
+          <Route path="/shared/:token" element={<SharedTree />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

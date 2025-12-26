@@ -40,17 +40,23 @@ function generateOtp(): string {
  * Send OTP email
  */
 async function sendOtpEmail(email: string, otp: string): Promise<boolean> {
+  // Always log OTP for debugging (check terminal if email doesn't arrive)
+  console.log(`📧 OTP for ${email}: ${otp}`);
+  
+  // Check if SMTP is configured
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+  
+  if (!smtpUser || !smtpPass) {
+    console.log(`⚠️ SMTP not configured - email not sent. Check OTP above.`);
+    return true; // Return true so signup/verification flow continues
+  }
+  
   try {
-    // In development, just log the OTP
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`📧 [DEV] OTP for ${email}: ${otp}`);
-      return true;
-    }
-    
     console.log(`📧 Sending OTP email to ${email} via ${process.env.SMTP_HOST}...`);
     
     const result = await transporter.sendMail({
-      from: process.env.SMTP_FROM || 'noreply@familytree.com',
+      from: process.env.SMTP_FROM || smtpUser,
       to: email,
       subject: 'Verify your email - Family Tree',
       html: `
@@ -70,7 +76,8 @@ async function sendOtpEmail(email: string, otp: string): Promise<boolean> {
     return true;
   } catch (error) {
     console.error('❌ Failed to send OTP email:', error);
-    return false;
+    // Still return true so the flow continues - user can check terminal for OTP
+    return true;
   }
 }
 

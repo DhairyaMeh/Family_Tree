@@ -129,17 +129,29 @@ export default function Pricing() {
               </ul>
             </div>
             <div className="card-footer">
-              <Link 
-                to={user ? '/tree' : '/signup'} 
-                className="select-btn"
-                style={{ 
-                  background: tier.popular 
-                    ? `linear-gradient(135deg, ${tier.color}, #f59e0b)` 
-                    : 'rgba(255, 255, 255, 0.1)'
-                }}
-              >
-                {user ? 'Current Plan' : 'Get Started'}
-              </Link>
+              {user && user.tier?.toLowerCase() === tier.name.toLowerCase() ? (
+                <div 
+                  className="select-btn current-plan"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${tier.color}, ${tier.color}dd)`,
+                    cursor: 'default'
+                  }}
+                >
+                  ✓ Current Plan
+                </div>
+              ) : (
+                <Link 
+                  to={user ? '/tree' : '/signup'} 
+                  className="select-btn"
+                  style={{ 
+                    background: tier.popular 
+                      ? `linear-gradient(135deg, ${tier.color}, #f59e0b)` 
+                      : 'rgba(255, 255, 255, 0.1)'
+                  }}
+                >
+                  {user ? 'Upgrade' : 'Get Started'}
+                </Link>
+              )}
             </div>
           </motion.div>
         ))}
@@ -376,6 +388,14 @@ export default function Pricing() {
 
         .select-btn:hover {
           transform: translateY(-2px);
+        }
+
+        .select-btn.current-plan {
+          opacity: 1;
+        }
+
+        .select-btn.current-plan:hover {
+          transform: none;
         }
 
         .pricing-faq {

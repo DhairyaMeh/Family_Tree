@@ -139,6 +139,17 @@ export default function Pricing() {
                 >
                   ✓ Current Plan
                 </div>
+              ) : tier.name === 'Free' && user && (user.tier === 'silver' || user.tier === 'gold' || user.tier === 'admin') ? (
+                <div 
+                  className="select-btn included"
+                  style={{ 
+                    background: 'rgba(74, 222, 128, 0.2)',
+                    cursor: 'default',
+                    border: '1px solid rgba(74, 222, 128, 0.3)'
+                  }}
+                >
+                  ✓ Included
+                </div>
               ) : (
                 <Link 
                   to={user ? '/tree' : '/signup'} 
@@ -390,12 +401,18 @@ export default function Pricing() {
           transform: translateY(-2px);
         }
 
-        .select-btn.current-plan {
+        .select-btn.current-plan,
+        .select-btn.included {
           opacity: 1;
         }
 
-        .select-btn.current-plan:hover {
+        .select-btn.current-plan:hover,
+        .select-btn.included:hover {
           transform: none;
+        }
+
+        .select-btn.included {
+          color: #4ade80;
         }
 
         .pricing-faq {

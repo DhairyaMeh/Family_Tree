@@ -78,6 +78,19 @@ async function seed() {
     await goldUser.save();
     console.log('Created gold test user (username: gold_test, password: gold123)');
 
+    // Create Free Test User
+    const freeId = uuidv4();
+    const freeUser = new UserModel({
+      _id: freeId,
+      username: 'free_test',
+      email: 'free@familytree.com',
+      password: 'free123',
+      tier: 'free',
+      isEmailVerified: true,
+    });
+    await freeUser.save();
+    console.log('Created free test user (username: free_test, password: free123)');
+
     // Create IDs for all family members
     const ids = {
       grandpaHenry: uuidv4(),
@@ -279,8 +292,9 @@ async function seed() {
     console.log('\n📋 Login Credentials:');
     console.log('   Admin:  username=admin, password=admin123 (unlimited trees)');
     console.log('   Demo:   username=demo, password=demo123 (gold tier - 5 trees)');
-    console.log('   Silver: username=silver_test, password=silver123 (silver tier - 1 tree)');
     console.log('   Gold:   username=gold_test, password=gold123 (gold tier - 5 trees)');
+    console.log('   Silver: username=silver_test, password=silver123 (silver tier - 1 tree)');
+    console.log('   Free:   username=free_test, password=free123 (view only, no edit/create)');
 
   } catch (error) {
     console.error('Seed failed:', error);

@@ -1,24 +1,28 @@
 /**
  * SharedTree - View a tree shared via link
  * This component loads a tree by its share token and displays it in read-only mode
+ * If the user owns the tree, they can edit it
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { TreeSVG } from '../components/TreeSVG';
 import { NavigationControls, ZoomControls } from '../components/Controls';
 import { useNavigation } from '../hooks/useNavigation';
 import { useTransform } from '../hooks/useTransform';
+import { useAuth } from '../context/AuthContext';
 import type { FamilyTree, Person } from '../types';
 
 const API_BASE = '/api';
 
 export default function SharedTree() {
   const { token } = useParams<{ token: string }>();
+  const { user, token: authToken } = useAuth();
   const [tree, setTree] = useState<FamilyTree | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
 
   // Navigation state
   const {
@@ -49,11 +53,23 @@ export default function SharedTree() {
       }
 
       try {
-        const response = await fetch(`${API_BASE}/tree/shared?token=${token}`);
+        // Include auth token if user is logged in to check ownership
+        const headers: Record<string, string> = {};
+        if (authToken) {
+          headers['Authorization'] = `Bearer ${authToken}`;
+        }
+
+        const response = await fetch(`${API_BASE}/tree/shared?token=${token}`, { headers });
         const data = await response.json();
 
         if (data.success && data.data) {
           setTree(data.data);
+          
+          // Check if current user owns this tree
+          if (user && data.data.ownerId === user._id) {
+            setIsOwner(true);
+          }
+          
           if (data.data.rootId) {
             resetNavigation(data.data.rootId);
           }
@@ -68,7 +84,7 @@ export default function SharedTree() {
     }
 
     loadSharedTree();
-  }, [token, resetNavigation]);
+  }, [token, resetNavigation, authToken, user]);
 
   // Handle clicking on a person node - focus on them
   const handlePersonClick = useCallback((personId: string) => {
@@ -141,13 +157,27 @@ export default function SharedTree() {
       <header className="shared-header">
         <div className="header-left">
           <Link to="/" className="logo">🌳 Family Tree</Link>
-          <span className="shared-badge">👁️ Shared View</span>
+          {isOwner ? (
+            <span className="owner-badge">✏️ Your Tree</span>
+          ) : (
+            <span className="shared-badge">👁️ Shared View</span>
+          )}
         </div>
         <div className="header-center">
           <h1>{tree.name}</h1>
         </div>
         <div className="header-right">
-          <Link to="/signup" className="btn-signup">Create Your Own Tree</Link>
+          {user ? (
+            // User is logged in
+            isOwner ? (
+              <Link to="/tree" className="btn-edit">Open in Editor</Link>
+            ) : (
+              <Link to="/tree" className="btn-my-trees">My Trees</Link>
+            )
+          ) : (
+            // User is not logged in - show signup CTA
+            <Link to="/signup" className="btn-signup">Create Your Own Tree</Link>
+          )}
         </div>
       </header>
 
@@ -187,12 +217,28 @@ export default function SharedTree() {
         onReset={resetTransform}
       />
 
-      {/* Info Banner */}
+      {/* Info Banner - Different content based on user state */}
       <div className="info-banner">
-        <span>👁️ View Only</span>
-        <span>•</span>
-        <span>Want to create your own family tree?</span>
-        <Link to="/signup">Sign up free</Link>
+        {isOwner ? (
+          <>
+            <span>✏️ This is your tree</span>
+            <span>•</span>
+            <Link to="/tree">Open in full editor</Link>
+          </>
+        ) : user ? (
+          <>
+            <span>👁️ View Only</span>
+            <span>•</span>
+            <span>Shared by another user</span>
+          </>
+        ) : (
+          <>
+            <span>👁️ View Only</span>
+            <span>•</span>
+            <span>Want to create your own family tree?</span>
+            <Link to="/signup">Sign up free</Link>
+          </>
+        )}
       </div>
 
       <style>{sharedTreeStyles}</style>
@@ -282,6 +328,15 @@ const sharedTreeStyles = `
     color: #60a5fa;
   }
 
+  .owner-badge {
+    padding: 6px 12px;
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 20px;
+    font-size: 12px;
+    color: #34d399;
+  }
+
   .header-center h1 {
     margin: 0;
     font-size: 18px;
@@ -308,6 +363,37 @@ const sharedTreeStyles = `
 
   .btn-signup:hover {
     transform: translateY(-2px);
+  }
+
+  .btn-edit {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform 0.2s;
+  }
+
+  .btn-edit:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn-my-trees {
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #f1f5f9;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .btn-my-trees:hover {
+    background: rgba(255, 255, 255, 0.15);
   }
 
   .tree-container {

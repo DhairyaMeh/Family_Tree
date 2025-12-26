@@ -8,17 +8,43 @@ import type { FamilyTree, TreeSummary, ApiResponse, PersonFormData } from '../ty
 const API_BASE = '/api';
 
 /**
+ * Get auth token from localStorage
+ */
+function getAuthToken(): string | null {
+  const authData = localStorage.getItem('auth');
+  if (authData) {
+    try {
+      const { token } = JSON.parse(authData);
+      return token;
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
  * Generic fetch wrapper with error handling.
  */
 async function fetchApi<T>(
   endpoint: string,
-  options?: RequestInit
+  options?: RequestInit,
+  requiresAuth: boolean = false
 ): Promise<ApiResponse<T>> {
   try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    const token = getAuthToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    } else if (requiresAuth) {
+      return { success: false, error: 'Authentication required' };
+    }
+
     const response = await fetch(`${API_BASE}${endpoint}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       ...options,
     });
 
@@ -52,6 +78,7 @@ export async function getTree(treeId: string): Promise<ApiResponse<FamilyTree>> 
 /**
  * Create a new family tree.
  * Can create empty tree (just name) or with first person.
+ * Requires authentication (Silver/Gold/Admin tier).
  */
 export async function createTree(
   name: string,
@@ -60,11 +87,12 @@ export async function createTree(
   return fetchApi<FamilyTree>('/tree', {
     method: 'POST',
     body: JSON.stringify({ name, rootPerson }),
-  });
+  }, true);
 }
 
 /**
  * Update a tree (e.g., rename).
+ * Requires authentication and ownership.
  */
 export async function updateTree(
   treeId: string,
@@ -73,20 +101,22 @@ export async function updateTree(
   return fetchApi<FamilyTree>(`/tree/${treeId}`, {
     method: 'PUT',
     body: JSON.stringify(updates),
-  });
+  }, true);
 }
 
 /**
  * Delete a family tree.
+ * Requires authentication and ownership.
  */
 export async function deleteTree(treeId: string): Promise<ApiResponse<{ deleted: boolean }>> {
   return fetchApi<{ deleted: boolean }>(`/tree/${treeId}`, {
     method: 'DELETE',
-  });
+  }, true);
 }
 
 /**
  * Add first person to an empty tree.
+ * Requires authentication and ownership.
  */
 export async function addFirstPerson(
   treeId: string,
@@ -95,11 +125,12 @@ export async function addFirstPerson(
   return fetchApi<FamilyTree>(`/tree/${treeId}/first-person`, {
     method: 'POST',
     body: JSON.stringify(personData),
-  });
+  }, true);
 }
 
 /**
  * Add a spouse to a person.
+ * Requires authentication and ownership.
  */
 export async function addSpouse(
   treeId: string,
@@ -109,11 +140,12 @@ export async function addSpouse(
   return fetchApi<FamilyTree>(`/tree/${treeId}/person/${personId}/spouse`, {
     method: 'POST',
     body: JSON.stringify(spouseData),
-  });
+  }, true);
 }
 
 /**
  * Add a child to a person.
+ * Requires authentication and ownership.
  */
 export async function addChild(
   treeId: string,
@@ -123,11 +155,12 @@ export async function addChild(
   return fetchApi<FamilyTree>(`/tree/${treeId}/person/${personId}/child`, {
     method: 'POST',
     body: JSON.stringify(childData),
-  });
+  }, true);
 }
 
 /**
  * Add a parent (ancestor) to a person.
+ * Requires authentication and ownership.
  */
 export async function addParent(
   treeId: string,
@@ -137,11 +170,12 @@ export async function addParent(
   return fetchApi<FamilyTree>(`/tree/${treeId}/person/${personId}/parent`, {
     method: 'POST',
     body: JSON.stringify(parentData),
-  });
+  }, true);
 }
 
 /**
  * Update a person's details.
+ * Requires authentication and ownership.
  */
 export async function updatePerson(
   treeId: string,
@@ -151,11 +185,12 @@ export async function updatePerson(
   return fetchApi<FamilyTree>(`/tree/${treeId}/person/${personId}`, {
     method: 'PUT',
     body: JSON.stringify(updates),
-  });
+  }, true);
 }
 
 /**
  * Delete a person from the tree.
+ * Requires authentication and ownership.
  */
 export async function deletePerson(
   treeId: string,
@@ -163,6 +198,6 @@ export async function deletePerson(
 ): Promise<ApiResponse<FamilyTree>> {
   return fetchApi<FamilyTree>(`/tree/${treeId}/person/${personId}`, {
     method: 'DELETE',
-  });
+  }, true);
 }
 

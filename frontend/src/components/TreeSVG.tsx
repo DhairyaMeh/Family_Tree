@@ -25,6 +25,7 @@ interface TreeSVGProps {
   onAddParent: (personId: string) => void;
   onEditPerson: (personId: string) => void;
   onDeletePerson: (personId: string) => void;
+  canEdit?: boolean;
 }
 
 /**
@@ -49,6 +50,7 @@ export function TreeSVG({
   onAddParent,
   onEditPerson,
   onDeletePerson,
+  canEdit = true,
 }: TreeSVGProps) {
   const [hoveredPersonId, setHoveredPersonId] = useState<string | null>(null);
   
@@ -141,6 +143,7 @@ export function TreeSVG({
               onAddParent={onAddParent}
               onEdit={onEditPerson}
               onDelete={onDeletePerson}
+              canEdit={canEdit}
             />
           ))}
         </AnimatePresence>

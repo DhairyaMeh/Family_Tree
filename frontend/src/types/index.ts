@@ -32,6 +32,7 @@ export interface FamilyTree {
   rootId: string;
   createdAt: string;
   updatedAt: string;
+  canEdit?: boolean; // Whether current user can edit this tree
 }
 
 /**
@@ -109,6 +110,10 @@ export interface TreeSummary {
   peopleCount: number;
   createdAt: string;
   updatedAt: string;
+  ownerId?: string;
+  shareToken?: string;
+  isPublic?: boolean;
+  isOwner?: boolean;
 }
 
 /**

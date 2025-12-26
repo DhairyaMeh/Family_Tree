@@ -206,12 +206,14 @@ interface TreeActionsProps {
   onOpenTreeSelector: () => void;
   onCreateTree: () => void;
   hasTree: boolean;
+  canCreateTrees?: boolean;
 }
 
 export function TreeActions({
   onOpenTreeSelector,
   onCreateTree,
   hasTree,
+  canCreateTrees = true,
 }: TreeActionsProps) {
   return (
     <motion.div
@@ -238,16 +240,32 @@ export function TreeActions({
         📁 {hasTree ? 'Switch Tree' : 'Load Tree'}
       </button>
       
-      <button
-        onClick={onCreateTree}
-        style={{
-          ...buttonStyle,
-          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-          border: 'none',
-        }}
-      >
-        + New Tree
-      </button>
+      {canCreateTrees ? (
+        <button
+          onClick={onCreateTree}
+          style={{
+            ...buttonStyle,
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            border: 'none',
+          }}
+        >
+          + New Tree
+        </button>
+      ) : (
+        <button
+          disabled
+          style={{
+            ...buttonStyle,
+            background: 'rgba(100, 116, 139, 0.5)',
+            border: 'none',
+            cursor: 'not-allowed',
+            opacity: 0.6,
+          }}
+          title="Upgrade to Silver or Gold to create trees"
+        >
+          🔒 Upgrade to Create
+        </button>
+      )}
     </motion.div>
   );
 }

@@ -21,7 +21,7 @@ import {
   getProfile,
   updateProfile,
 } from '../controllers/authController.js';
-import { authenticate } from '../middleware/auth.js';
+import { authenticate, optionalAuth } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -62,20 +62,22 @@ router.post('/auth/google', googleAuth);
 router.get('/auth/profile', authenticate, getProfile);
 router.put('/auth/profile', authenticate, updateProfile);
 
-// Tree routes
-router.get('/trees', getAllTrees);
-router.get('/tree/:id', getTree);
-router.post('/tree', createTree);
-router.put('/tree/:id', updateTree);
-router.delete('/tree/:id', deleteTree);
-router.post('/tree/:id/first-person', addFirstPerson);
+// Tree routes (with optional auth to show user's trees)
+router.get('/trees', optionalAuth, getAllTrees);
+router.get('/tree/:id', optionalAuth, getTree);
 
-// Person routes
-router.put('/tree/:treeId/person/:personId', updatePerson);
-router.delete('/tree/:treeId/person/:personId', deletePerson);
-router.post('/tree/:treeId/person/:personId/spouse', addSpouse);
-router.post('/tree/:treeId/person/:personId/child', addChild);
-router.post('/tree/:treeId/person/:personId/parent', addParent);
+// Tree routes (protected - require authentication)
+router.post('/tree', authenticate, createTree);
+router.put('/tree/:id', authenticate, updateTree);
+router.delete('/tree/:id', authenticate, deleteTree);
+router.post('/tree/:id/first-person', authenticate, addFirstPerson);
+
+// Person routes (protected - require authentication and ownership)
+router.put('/tree/:treeId/person/:personId', authenticate, updatePerson);
+router.delete('/tree/:treeId/person/:personId', authenticate, deletePerson);
+router.post('/tree/:treeId/person/:personId/spouse', authenticate, addSpouse);
+router.post('/tree/:treeId/person/:personId/child', authenticate, addChild);
+router.post('/tree/:treeId/person/:personId/parent', authenticate, addParent);
 
 export default router;
 

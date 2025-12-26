@@ -26,6 +26,7 @@ interface PersonNodeProps {
   onAddParent: (personId: string) => void;
   onEdit: (personId: string) => void;
   onDelete: (personId: string) => void;
+  canEdit?: boolean;
 }
 
 // Spring animation config for Workday-like smooth motion
@@ -56,6 +57,7 @@ export function PersonNode({
   onAddParent,
   onEdit,
   onDelete,
+  canEdit = true,
 }: PersonNodeProps) {
   const [showActions, setShowActions] = useState(false);
   const { person, x, y, width, height, isFocused } = node;
@@ -348,8 +350,8 @@ export function PersonNode({
         {person.gender === 'male' ? '♂' : '♀'}
       </text>
       
-      {/* Dynamic action buttons - shown on hover */}
-      {showActions && (
+      {/* Dynamic action buttons - shown on hover only if user can edit */}
+      {showActions && canEdit && (
         <motion.g
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}

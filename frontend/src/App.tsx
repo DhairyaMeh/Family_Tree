@@ -97,6 +97,12 @@ export default function App() {
   // Check if tree is empty (has no people)
   const isTreeEmpty = tree && Object.keys(tree.people).length === 0;
 
+  // Check if user can edit this tree
+  const canEdit = tree?.canEdit ?? false;
+
+  // Check if user can create trees (not free tier)
+  const canCreateTrees = user ? user.tier !== 'free' : false;
+
   // Hide help after 5 seconds
   useEffect(() => {
     const timer = setTimeout(() => setShowHelp(false), 5000);
@@ -117,39 +123,39 @@ export default function App() {
    * Modal handlers
    */
   const openAddSpouseModal = useCallback((personId: string) => {
-    if (tree) {
+    if (tree && canEdit) {
       setSelectedPerson(tree.people[personId]);
       setModal({ type: 'add-spouse', personId, isOpen: true });
     }
-  }, [tree]);
+  }, [tree, canEdit]);
 
   const openAddChildModal = useCallback((personId: string) => {
-    if (tree) {
+    if (tree && canEdit) {
       setSelectedPerson(tree.people[personId]);
       setModal({ type: 'add-child', personId, isOpen: true });
     }
-  }, [tree]);
+  }, [tree, canEdit]);
 
   const openAddParentModal = useCallback((personId: string) => {
-    if (tree) {
+    if (tree && canEdit) {
       setSelectedPerson(tree.people[personId]);
       setModal({ type: 'add-parent', personId, isOpen: true });
     }
-  }, [tree]);
+  }, [tree, canEdit]);
 
   const openEditModal = useCallback((personId: string) => {
-    if (tree) {
+    if (tree && canEdit) {
       setSelectedPerson(tree.people[personId]);
       setModal({ type: 'edit-person', personId, isOpen: true });
     }
-  }, [tree]);
+  }, [tree, canEdit]);
 
   const openDeleteModal = useCallback((personId: string) => {
-    if (tree) {
+    if (tree && canEdit) {
       setSelectedPerson(tree.people[personId]);
       setModal({ type: 'delete-person', personId, isOpen: true });
     }
-  }, [tree]);
+  }, [tree, canEdit]);
 
   const openCreateTreeModal = useCallback(() => {
     setShowCreateTreeModal(true);
@@ -394,6 +400,7 @@ export default function App() {
             onAddParent={openAddParentModal}
             onEditPerson={openEditModal}
             onDeletePerson={openDeleteModal}
+            canEdit={canEdit}
           />
         )}
         
@@ -406,31 +413,37 @@ export default function App() {
               transition={{ delay: 0.2 }}
             >
               <h2 style={{ marginBottom: '8px' }}>{tree.name}</h2>
-              <p style={{ color: '#64748b', marginBottom: '32px' }}>This tree is empty. Add your first family member to get started.</p>
-              
-              {/* Plus icon button */}
-              <motion.button
-                onClick={openAddFirstPersonModal}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                style={{
-                  width: '120px',
-                  height: '120px',
-                  borderRadius: '16px',
-                  border: '2px dashed rgba(59, 130, 246, 0.5)',
-                  background: 'rgba(59, 130, 246, 0.1)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  transition: 'all 0.2s',
-                }}
-              >
-                <span style={{ fontSize: '48px', color: '#3b82f6' }}>+</span>
-                <span style={{ fontSize: '12px', color: '#3b82f6', fontWeight: 500 }}>Add Person</span>
-              </motion.button>
+              {canEdit ? (
+                <>
+                  <p style={{ color: '#64748b', marginBottom: '32px' }}>This tree is empty. Add your first family member to get started.</p>
+                  
+                  {/* Plus icon button */}
+                  <motion.button
+                    onClick={openAddFirstPersonModal}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{
+                      width: '120px',
+                      height: '120px',
+                      borderRadius: '16px',
+                      border: '2px dashed rgba(59, 130, 246, 0.5)',
+                      background: 'rgba(59, 130, 246, 0.1)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    <span style={{ fontSize: '48px', color: '#3b82f6' }}>+</span>
+                    <span style={{ fontSize: '12px', color: '#3b82f6', fontWeight: 500 }}>Add Person</span>
+                  </motion.button>
+                </>
+              ) : (
+                <p style={{ color: '#64748b', marginBottom: '32px' }}>This tree is empty. You don't have permission to edit it.</p>
+              )}
             </motion.div>
           </div>
         )}
@@ -481,6 +494,7 @@ export default function App() {
         onOpenTreeSelector={() => setShowTreeSelector(true)}
         onCreateTree={openCreateTreeModal}
         hasTree={!!tree}
+        canCreateTrees={canCreateTrees}
       />
 
       {/* Modals */}

@@ -88,6 +88,41 @@ const features = [
   },
 ];
 
+const faqs = [
+  {
+    question: 'How do I get started with Family Tree?',
+    answer: 'Simply sign up for a free account, and you can start by viewing trees shared with you. To create your own tree, upgrade to our Silver or Gold plan.',
+  },
+  {
+    question: 'Can I add photos to family members?',
+    answer: 'Yes! You can upload photos for each family member to make your tree more personal and memorable. Photos are supported on all paid plans.',
+  },
+  {
+    question: 'How do I share my family tree with relatives?',
+    answer: 'Click the "Share" button on your tree to generate a unique link. Anyone with this link can view your tree, even without an account.',
+  },
+  {
+    question: 'Is my family data secure?',
+    answer: 'Absolutely. Your data is stored securely and is only visible to you unless you explicitly share it. We never sell or share your personal information.',
+  },
+  {
+    question: 'Can multiple family members collaborate on a tree?',
+    answer: 'Currently, trees are managed by a single owner. However, you can share your tree for viewing with unlimited family members using the share link.',
+  },
+  {
+    question: 'What\'s the difference between Silver and Gold plans?',
+    answer: 'Silver allows you to create 1 family tree with unlimited members. Gold lets you create up to 5 trees, perfect for documenting both sides of the family or multiple generations.',
+  },
+  {
+    question: 'Can I cancel my subscription anytime?',
+    answer: 'Yes, you can cancel your subscription at any time. Your trees will remain accessible in view-only mode on the free plan.',
+  },
+  {
+    question: 'Do you offer refunds?',
+    answer: 'We offer a 7-day money-back guarantee if you\'re not satisfied with our service. Contact our support team for assistance.',
+  },
+];
+
 export default function Home() {
   const { user } = useAuth();
 
@@ -98,13 +133,23 @@ export default function Home() {
         <Link to="/" className="nav-brand">
           <span>🌳</span> Family Tree
         </Link>
-        <div className="nav-links">
+        <div className="nav-center">
           <a href="#about" className="nav-link">About</a>
           <a href="#pricing" className="nav-link">Pricing</a>
+          <a href="#faq" className="nav-link">FAQ</a>
+          <Link to="/contact" className="nav-link">Contact</Link>
+        </div>
+        <div className="nav-user">
           {user ? (
-            <Link to="/tree" className="nav-link">{user.username}</Link>
+            <Link to="/tree" className="user-btn">
+              <span className="user-avatar">{user.username.charAt(0).toUpperCase()}</span>
+              <span className="user-name">{user.username}</span>
+            </Link>
           ) : (
-            <Link to="/signup" className="btn-primary">Sign Up</Link>
+            <>
+              <Link to="/login" className="nav-link">Login</Link>
+              <Link to="/signup" className="btn-primary">Sign Up</Link>
+            </>
           )}
         </div>
       </nav>
@@ -266,11 +311,63 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section id="faq" className="faq-section">
+        <div className="section-header">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            Frequently Asked Questions
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            Got questions? We've got answers
+          </motion.p>
+        </div>
+        <div className="faq-grid">
+          {faqs.map((faq, index) => (
+            <motion.div
+              key={index}
+              className="faq-card"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+            >
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
+            </motion.div>
+          ))}
+        </div>
+        <motion.div 
+          className="faq-cta"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <p>Still have questions?</p>
+          <Link to="/contact" className="btn-secondary">Contact Us</Link>
+        </motion.div>
+      </section>
+
       {/* Footer */}
       <footer className="home-footer">
         <div className="footer-content">
           <div className="footer-brand">
             <span>🌳</span> Family Tree
+          </div>
+          <div className="footer-links">
+            <Link to="/contact">Contact</Link>
+            <Link to="/pricing">Pricing</Link>
+            <a href="#faq">FAQ</a>
           </div>
           <p>© 2024 Family Tree. All rights reserved.</p>
         </div>
@@ -306,12 +403,23 @@ export default function Home() {
           font-weight: 600;
           text-decoration: none;
           color: #f1f5f9;
+          flex: 1;
         }
 
-        .nav-links {
+        .nav-center {
           display: flex;
           align-items: center;
-          gap: 24px;
+          gap: 32px;
+          flex: 2;
+          justify-content: center;
+        }
+
+        .nav-user {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          flex: 1;
+          justify-content: flex-end;
         }
 
         .nav-link {
@@ -319,10 +427,62 @@ export default function Home() {
           text-decoration: none;
           font-size: 14px;
           transition: color 0.2s;
+          padding: 8px 0;
+          position: relative;
         }
 
         .nav-link:hover {
           color: #f1f5f9;
+        }
+
+        .nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          transition: width 0.3s;
+        }
+
+        .nav-link:hover::after {
+          width: 100%;
+        }
+
+        .user-btn {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 8px 16px;
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+          border: 1px solid rgba(59, 130, 246, 0.3);
+          border-radius: 30px;
+          text-decoration: none;
+          color: #f1f5f9;
+          transition: all 0.2s;
+        }
+
+        .user-btn:hover {
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3));
+          transform: translateY(-2px);
+        }
+
+        .user-avatar {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .user-name {
+          font-size: 14px;
+          font-weight: 500;
         }
 
         .btn-primary {
@@ -624,6 +784,60 @@ export default function Home() {
           transform: translateY(-2px);
         }
 
+        /* FAQ Section */
+        .faq-section {
+          padding: 100px 60px;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .faq-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 24px;
+        }
+
+        .faq-card {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 16px;
+          padding: 24px;
+          transition: all 0.2s;
+        }
+
+        .faq-card:hover {
+          border-color: rgba(59, 130, 246, 0.3);
+          background: rgba(255, 255, 255, 0.08);
+        }
+
+        .faq-card h3 {
+          font-size: 16px;
+          margin: 0 0 12px;
+          color: #f1f5f9;
+        }
+
+        .faq-card p {
+          font-size: 14px;
+          color: #94a3b8;
+          line-height: 1.6;
+          margin: 0;
+        }
+
+        .faq-cta {
+          text-align: center;
+          margin-top: 48px;
+          padding: 32px;
+          background: rgba(59, 130, 246, 0.1);
+          border-radius: 16px;
+          border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .faq-cta p {
+          color: #94a3b8;
+          margin: 0 0 16px;
+          font-size: 16px;
+        }
+
         /* Footer */
         .home-footer {
           padding: 40px 60px;
@@ -644,6 +858,22 @@ export default function Home() {
           gap: 8px;
           font-size: 18px;
           font-weight: 600;
+        }
+
+        .footer-links {
+          display: flex;
+          gap: 24px;
+        }
+
+        .footer-links a {
+          color: #64748b;
+          text-decoration: none;
+          font-size: 14px;
+          transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+          color: #f1f5f9;
         }
 
         .footer-content p {
@@ -675,10 +905,23 @@ export default function Home() {
         @media (max-width: 768px) {
           .home-nav {
             padding: 16px 20px;
+            flex-wrap: wrap;
+            gap: 16px;
           }
 
-          .nav-links {
+          .nav-brand {
+            flex: unset;
+          }
+
+          .nav-center {
+            order: 3;
+            flex: 0 0 100%;
+            justify-content: center;
             gap: 16px;
+          }
+
+          .nav-user {
+            flex: unset;
           }
 
           .hero h1 {
@@ -690,6 +933,10 @@ export default function Home() {
           }
 
           .features-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .faq-grid {
             grid-template-columns: 1fr;
           }
 
@@ -705,6 +952,10 @@ export default function Home() {
             flex-direction: column;
             gap: 16px;
             text-align: center;
+          }
+
+          .footer-links {
+            justify-content: center;
           }
         }
       `}</style>

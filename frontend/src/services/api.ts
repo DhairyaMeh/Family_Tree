@@ -11,16 +11,8 @@ const API_BASE = '/api';
  * Get auth token from localStorage
  */
 function getAuthToken(): string | null {
-  const authData = localStorage.getItem('auth');
-  if (authData) {
-    try {
-      const { token } = JSON.parse(authData);
-      return token;
-    } catch {
-      return null;
-    }
-  }
-  return null;
+  // Token is stored directly, not as JSON
+  return localStorage.getItem('token');
 }
 
 /**

@@ -207,6 +207,7 @@ interface TreeActionsProps {
   onCreateTree: () => void;
   hasTree: boolean;
   canCreateTrees?: boolean;
+  isFreeUser?: boolean;
 }
 
 export function TreeActions({
@@ -214,7 +215,48 @@ export function TreeActions({
   onCreateTree,
   hasTree,
   canCreateTrees = true,
+  isFreeUser = false,
 }: TreeActionsProps) {
+  // Free users don't see tree actions - they can only view shared trees
+  if (isFreeUser) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        style={{
+          position: 'absolute',
+          bottom: '20px',
+          left: '20px',
+          display: 'flex',
+          gap: '12px',
+          zIndex: 100,
+        }}
+      >
+        <div
+          style={{
+            ...buttonStyle,
+            background: 'rgba(15, 23, 42, 0.9)',
+            backdropFilter: 'blur(10px)',
+            cursor: 'default',
+          }}
+        >
+          👁️ View Only Mode
+        </div>
+        <button
+          onClick={() => window.location.href = '/pricing'}
+          style={{
+            ...buttonStyle,
+            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            border: 'none',
+          }}
+        >
+          ⬆️ Upgrade Plan
+        </button>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

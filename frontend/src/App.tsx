@@ -495,6 +495,7 @@ export default function App() {
         onCreateTree={openCreateTreeModal}
         hasTree={!!tree}
         canCreateTrees={canCreateTrees}
+        isFreeUser={user?.tier === 'free'}
       />
 
       {/* Modals */}

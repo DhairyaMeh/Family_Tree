@@ -167,8 +167,9 @@ export function PersonFormModal({
   const [formData, setFormData] = useState<PersonFormData>({
     name: '',
     gender: 'male',
-    birthYear: undefined,
+    birthDate: undefined,
     alive: true,
+    imageUrl: undefined,
     ...initialData,
   });
   
@@ -178,8 +179,9 @@ export function PersonFormModal({
       setFormData({
         name: '',
         gender: 'male',
-        birthYear: undefined,
+        birthDate: undefined,
         alive: true,
+        imageUrl: undefined,
         ...initialData,
       });
     }
@@ -193,9 +195,83 @@ export function PersonFormModal({
     }
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, imageUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title={title}>
       <form onSubmit={handleSubmit}>
+        {/* Image Upload */}
+        <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+          <label style={labelStyle}>Photo</label>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+            {formData.imageUrl ? (
+              <div style={{ position: 'relative' }}>
+                <img 
+                  src={formData.imageUrl} 
+                  alt="Preview" 
+                  style={{ 
+                    width: '80px', 
+                    height: '80px', 
+                    borderRadius: '50%', 
+                    objectFit: 'cover',
+                    border: '2px solid rgba(255, 255, 255, 0.2)',
+                  }} 
+                />
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, imageUrl: undefined })}
+                  style={{
+                    position: 'absolute',
+                    top: '-8px',
+                    right: '-8px',
+                    width: '24px',
+                    height: '24px',
+                    borderRadius: '50%',
+                    background: '#ef4444',
+                    border: 'none',
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <label style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                border: '2px dashed rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                background: 'rgba(255, 255, 255, 0.05)',
+                transition: 'all 0.2s',
+              }}>
+                <span style={{ fontSize: '24px' }}>📷</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: 'none' }}
+                />
+              </label>
+            )}
+            <span style={{ fontSize: '12px', color: '#64748b' }}>Click to upload</span>
+          </div>
+        </div>
+
         {/* Name input */}
         <div style={{ marginBottom: '20px' }}>
           <label style={labelStyle}>Name *</label>
@@ -237,20 +313,20 @@ export function PersonFormModal({
           </div>
         </div>
         
-        {/* Birth year input */}
+        {/* Birth date input with calendar */}
         <div style={{ marginBottom: '20px' }}>
-          <label style={labelStyle}>Birth Year</label>
+          <label style={labelStyle}>Birth Date</label>
           <input
-            type="number"
-            value={formData.birthYear || ''}
+            type="date"
+            value={formData.birthDate || ''}
             onChange={(e) => setFormData({ 
               ...formData, 
-              birthYear: e.target.value ? parseInt(e.target.value) : undefined 
+              birthDate: e.target.value || undefined 
             })}
-            placeholder="e.g., 1985"
-            min={1800}
-            max={new Date().getFullYear()}
-            style={inputStyle}
+            style={{
+              ...inputStyle,
+              colorScheme: 'dark',
+            }}
           />
         </div>
         

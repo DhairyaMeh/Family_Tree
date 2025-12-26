@@ -15,7 +15,7 @@ export interface Person {
   gender: Gender;
   spouseId?: string;
   childrenIds: string[];
-  birthYear?: number;
+  birthDate?: string;
   alive?: boolean;
   imageUrl?: string;
 }
@@ -39,17 +39,18 @@ export interface FamilyTree {
 export interface CreatePersonRequest {
   name: string;
   gender: Gender;
-  birthYear?: number;
+  birthDate?: string;
   alive?: boolean;
   parentId?: string;
   spouseId?: string;
   treeId: string;
+  imageUrl?: string;
 }
 
 export interface UpdatePersonRequest {
   name?: string;
   gender?: Gender;
-  birthYear?: number;
+  birthDate?: string;
   alive?: boolean;
   imageUrl?: string;
 }
@@ -59,8 +60,9 @@ export interface CreateTreeRequest {
   rootPerson?: {
     name: string;
     gender: Gender;
-    birthYear?: number;
+    birthDate?: string;
     alive?: boolean;
+    imageUrl?: string;
   };
 }
 
@@ -71,15 +73,17 @@ export interface UpdateTreeRequest {
 export interface AddSpouseRequest {
   name: string;
   gender: Gender;
-  birthYear?: number;
+  birthDate?: string;
   alive?: boolean;
+  imageUrl?: string;
 }
 
 export interface AddChildRequest {
   name: string;
   gender: Gender;
-  birthYear?: number;
+  birthDate?: string;
   alive?: boolean;
+  imageUrl?: string;
 }
 
 export interface ApiResponse<T> {

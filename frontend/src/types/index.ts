@@ -14,7 +14,7 @@ export interface Person {
   gender: Gender;
   spouseId?: string;
   childrenIds: string[];
-  birthYear?: number;
+  birthDate?: string;
   alive?: boolean;
   imageUrl?: string;
 }
@@ -135,7 +135,8 @@ export interface ModalState {
 export interface PersonFormData {
   name: string;
   gender: Gender;
-  birthYear?: number;
+  birthDate?: string;
   alive: boolean;
+  imageUrl?: string;
 }
 

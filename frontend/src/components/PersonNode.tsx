@@ -253,25 +253,54 @@ export function PersonNode({
         transition={{ duration: 0.2 }}
       />
       
-      {/* Avatar circle with initials */}
-      <circle
-        cx={32}
-        cy={height / 2}
-        r={22}
-        fill={colors.accent}
-        opacity={0.3}
-      />
-      <text
-        x={32}
-        y={height / 2 + 5}
-        textAnchor="middle"
-        fill={colors.text}
-        fontSize={13}
-        fontWeight={600}
-        fontFamily="Outfit, sans-serif"
-      >
-        {initials}
-      </text>
+      {/* Avatar circle with image or initials */}
+      {person.imageUrl ? (
+        <>
+          <defs>
+            <clipPath id={`avatar-clip-${person.id}`}>
+              <circle cx={32} cy={height / 2} r={22} />
+            </clipPath>
+          </defs>
+          <image
+            href={person.imageUrl}
+            x={10}
+            y={height / 2 - 22}
+            width={44}
+            height={44}
+            clipPath={`url(#avatar-clip-${person.id})`}
+            preserveAspectRatio="xMidYMid slice"
+          />
+          <circle
+            cx={32}
+            cy={height / 2}
+            r={22}
+            fill="none"
+            stroke={colors.accent}
+            strokeWidth={2}
+          />
+        </>
+      ) : (
+        <>
+          <circle
+            cx={32}
+            cy={height / 2}
+            r={22}
+            fill={colors.accent}
+            opacity={0.3}
+          />
+          <text
+            x={32}
+            y={height / 2 + 5}
+            textAnchor="middle"
+            fill={colors.text}
+            fontSize={13}
+            fontWeight={600}
+            fontFamily="Outfit, sans-serif"
+          >
+            {initials}
+          </text>
+        </>
+      )}
       
       {/* Status indicator dot */}
       <circle
@@ -293,8 +322,8 @@ export function PersonNode({
         {displayName}
       </text>
       
-      {/* Birth year */}
-      {person.birthYear && (
+      {/* Birth date */}
+      {person.birthDate && (
         <text
           x={62}
           y={height / 2 + 12}
@@ -304,7 +333,7 @@ export function PersonNode({
           fontFamily="Crimson Pro, serif"
           fontStyle="italic"
         >
-          b. {person.birthYear}
+          b. {new Date(person.birthDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </text>
       )}
       
@@ -342,14 +371,24 @@ export function PersonNode({
             <g
               key={button.id}
               onClick={button.onClick}
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', pointerEvents: 'auto' }}
             >
               <title>{button.title}</title>
+              {/* Invisible hit area for better click detection */}
+              <rect
+                x={width - actionBarWidth + buttonPadding + index * buttonWidth}
+                y={-30}
+                width={buttonWidth}
+                height={26}
+                fill="transparent"
+                style={{ pointerEvents: 'auto' }}
+              />
               <text
                 x={width - actionBarWidth + buttonPadding + index * buttonWidth + buttonWidth / 2 - 6}
                 y={-12}
                 fill={button.color}
                 fontSize={13}
+                style={{ pointerEvents: 'none' }}
               >
                 {button.emoji}
               </text>

@@ -12,7 +12,7 @@ const PersonSchema = new Schema<Person>(
     gender: { type: String, enum: ['male', 'female'], required: true },
     spouseId: { type: String },
     childrenIds: { type: [String], default: [] },
-    birthYear: { type: Number },
+    birthDate: { type: String },
     alive: { type: Boolean, default: true },
     imageUrl: { type: String },
   },

@@ -516,8 +516,9 @@ export default function App() {
         initialData={selectedPerson ? {
           name: selectedPerson.name,
           gender: selectedPerson.gender,
-          birthYear: selectedPerson.birthYear,
+          birthDate: selectedPerson.birthDate,
           alive: selectedPerson.alive ?? true,
+          imageUrl: selectedPerson.imageUrl,
         } : undefined}
         submitLabel="Save Changes"
       />

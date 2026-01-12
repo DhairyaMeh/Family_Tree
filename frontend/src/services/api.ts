@@ -5,7 +5,7 @@
 
 import type { FamilyTree, TreeSummary, ApiResponse, PersonFormData } from '../types';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://family-tree-api-nncf.onrender.com/api';
 
 /**
  * Get auth token from localStorage

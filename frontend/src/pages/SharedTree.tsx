@@ -14,7 +14,7 @@ import { useTransform } from '../hooks/useTransform';
 import { useAuth } from '../context/AuthContext';
 import type { FamilyTree } from '../types';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://family-tree-api-nncf.onrender.com/api';
 
 export default function SharedTree() {
   const { token } = useParams<{ token: string }>();

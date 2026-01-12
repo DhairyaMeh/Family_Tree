@@ -9,7 +9,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Gender, PersonFormData, Person } from '../types';
+import type { Gender, PersonFormData } from '../types';
 
 // Animation variants for modal
 const overlayVariants = {

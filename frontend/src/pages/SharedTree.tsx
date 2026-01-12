@@ -12,7 +12,7 @@ import { NavigationControls, ZoomControls } from '../components/Controls';
 import { useNavigation } from '../hooks/useNavigation';
 import { useTransform } from '../hooks/useTransform';
 import { useAuth } from '../context/AuthContext';
-import type { FamilyTree, Person } from '../types';
+import type { FamilyTree } from '../types';
 
 const API_BASE = '/api';
 
@@ -93,14 +93,6 @@ export default function SharedTree() {
 
   // Get focused person data
   const focusedPerson = tree && focusedPersonId ? tree.people[focusedPersonId] : null;
-
-  // Check if person has parents
-  const personHasParents = useCallback((personId: string): boolean => {
-    if (!tree) return false;
-    return Object.values(tree.people).some(
-      (p: Person) => p.childrenIds?.includes(personId)
-    );
-  }, [tree]);
 
   // Dummy handlers for TreeSVG (read-only mode)
   const noOp = () => {};
@@ -203,15 +195,17 @@ export default function SharedTree() {
       {focusedPerson && (
         <NavigationControls
           focusedPerson={focusedPerson}
+          familyTree={tree}
           canGoBack={canGoBack}
           canGoForward={canGoForward}
-          onGoBack={goBack}
-          onGoForward={goForward}
+          onBack={goBack}
+          onForward={goForward}
         />
       )}
 
       {/* Zoom Controls */}
       <ZoomControls
+        scale={transform.scale}
         onZoomIn={() => zoom(0.2)}
         onZoomOut={() => zoom(-0.2)}
         onReset={resetTransform}

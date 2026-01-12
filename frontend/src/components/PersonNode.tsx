@@ -145,8 +145,8 @@ export function PersonNode({
   // Color scheme based on gender and state
   const getColors = (person: Person, isFocused: boolean, isHovered: boolean) => {
     const baseColors = person.gender === 'male'
-      ? { bg: '#1a365d', border: '#2c5282', text: '#e2e8f0', accent: '#4299e1' }
-      : { bg: '#553c5e', border: '#744a7f', text: '#faf5ff', accent: '#b794f4' };
+      ? { bg: '#1a365d', border: '#2c5282', text: '#e2e8f0', accent: '#4299e1', glow: 'transparent' }
+      : { bg: '#553c5e', border: '#744a7f', text: '#faf5ff', accent: '#b794f4', glow: 'transparent' };
     
     if (isFocused) {
       return {

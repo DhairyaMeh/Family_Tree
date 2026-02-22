@@ -287,7 +287,9 @@ export default function App() {
       
       {/* Header */}
       <header className="app-header">
-        <h1>Family Tree</h1>
+        <Link to="/" className="header-link">
+          <h1>🌳 Family Tree</h1>
+        </Link>
         <p>Interactive Family Visualization</p>
       </header>
 

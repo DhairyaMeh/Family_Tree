@@ -27,13 +27,32 @@ export default function Profile() {
   const [verifySuccess, setVerifySuccess] = useState('');
   const [verifyLoading, setVerifyLoading] = useState(false);
 
-  // Countdown timer for resend button
+  // Phone verification state
+  const [isVerifyingPhone, setIsVerifyingPhone] = useState(false);
+  const [isAddingPhone, setIsAddingPhone] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneOtpValue, setPhoneOtpValue] = useState('');
+  const [phoneOtpSent, setPhoneOtpSent] = useState(false);
+  const [phoneResendCooldown, setPhoneResendCooldown] = useState(0);
+  const [phoneVerifyError, setPhoneVerifyError] = useState('');
+  const [phoneVerifySuccess, setPhoneVerifySuccess] = useState('');
+  const [phoneVerifyLoading, setPhoneVerifyLoading] = useState(false);
+
+  // Countdown timer for email resend button
   useEffect(() => {
     if (resendCooldown > 0) {
       const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
       return () => clearTimeout(timer);
     }
   }, [resendCooldown]);
+
+  // Countdown timer for phone resend button
+  useEffect(() => {
+    if (phoneResendCooldown > 0) {
+      const timer = setTimeout(() => setPhoneResendCooldown(phoneResendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [phoneResendCooldown]);
 
   const handleLogout = () => {
     logout();
@@ -106,6 +125,117 @@ export default function Profile() {
       setVerifyError(err instanceof Error ? err.message : 'Verification failed');
     } finally {
       setVerifyLoading(false);
+    }
+  };
+
+  // Phone verification handlers
+  const handleSendPhoneOtp = async () => {
+    if (!phoneNumber && !user?.phone) {
+      setPhoneVerifyError('Phone number is required');
+      return;
+    }
+
+    setPhoneVerifyError('');
+    setPhoneVerifySuccess('');
+    setPhoneVerifyLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/auth/send-phone-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ phone: phoneNumber || user?.phone }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send OTP');
+      }
+
+      // Update user with phone number if it's a new one
+      if (phoneNumber && user) {
+        updateUser({ ...user, phone: phoneNumber, isPhoneVerified: false });
+      }
+
+      setPhoneOtpSent(true);
+      setPhoneResendCooldown(60);
+      setPhoneVerifySuccess('OTP sent to your phone!');
+      setIsAddingPhone(false);
+    } catch (err) {
+      setPhoneVerifyError(err instanceof Error ? err.message : 'Failed to send OTP');
+    } finally {
+      setPhoneVerifyLoading(false);
+    }
+  };
+
+  const handleVerifyPhoneOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPhoneVerifyError('');
+    setPhoneVerifySuccess('');
+    setPhoneVerifyLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/auth/verify-phone-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ otp: phoneOtpValue }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Invalid OTP');
+      }
+
+      // Update user state with verified phone
+      if (user) {
+        updateUser({ ...user, isPhoneVerified: true });
+      }
+      
+      setPhoneVerifySuccess('Phone verified successfully!');
+      setIsVerifyingPhone(false);
+      setPhoneOtpValue('');
+      setPhoneOtpSent(false);
+      setPhoneNumber('');
+    } catch (err) {
+      setPhoneVerifyError(err instanceof Error ? err.message : 'Verification failed');
+    } finally {
+      setPhoneVerifyLoading(false);
+    }
+  };
+
+  const handleResendPhoneOtp = async () => {
+    setPhoneVerifyError('');
+    setPhoneVerifySuccess('');
+    setPhoneVerifyLoading(true);
+
+    try {
+      const response = await fetch(`${API_URL}/auth/resend-phone-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to resend OTP');
+      }
+
+      setPhoneResendCooldown(60);
+      setPhoneVerifySuccess('OTP sent to your phone!');
+    } catch (err) {
+      setPhoneVerifyError(err instanceof Error ? err.message : 'Failed to resend OTP');
+    } finally {
+      setPhoneVerifyLoading(false);
     }
   };
 
@@ -299,6 +429,155 @@ export default function Profile() {
                 </button>
               </div>
             )}
+            {/* Phone Number Section */}
+            <div className="info-row">
+              <span className="info-label">Phone Number</span>
+              <span className="info-value">
+                {user.phone ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {user.phone}
+                    {user.isPhoneVerified ? (
+                      ' ✅ Verified'
+                    ) : (
+                      <>
+                        {' ❌ Not Verified'}
+                        {!isVerifyingPhone && (
+                          <button
+                            className="btn-verify-small"
+                            onClick={() => setIsVerifyingPhone(true)}
+                          >
+                            Verify Now
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </span>
+                ) : (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    Not added
+                    {!isAddingPhone && (
+                      <button
+                        className="btn-verify-small"
+                        onClick={() => setIsAddingPhone(true)}
+                      >
+                        Add Phone
+                      </button>
+                    )}
+                  </span>
+                )}
+              </span>
+            </div>
+            
+            {/* Add Phone Number Section */}
+            {isAddingPhone && (
+              <div className="verify-section">
+                {phoneVerifyError && <div className="form-error">{phoneVerifyError}</div>}
+                {phoneVerifySuccess && <div className="form-success">{phoneVerifySuccess}</div>}
+                
+                <div className="verify-step">
+                  <p>Enter your phone number to add and verify</p>
+                  <div className="phone-input-group">
+                    <input
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value.replace(/[^0-9+]/g, ''))}
+                      placeholder="+91 9876543210"
+                      className="phone-input"
+                    />
+                    <button
+                      className="btn-primary"
+                      onClick={handleSendPhoneOtp}
+                      disabled={phoneVerifyLoading || !phoneNumber}
+                    >
+                      {phoneVerifyLoading ? 'Sending...' : 'Send OTP'}
+                    </button>
+                  </div>
+                </div>
+                
+                <button
+                  className="btn-outline btn-small"
+                  onClick={() => {
+                    setIsAddingPhone(false);
+                    setPhoneNumber('');
+                    setPhoneVerifyError('');
+                    setPhoneVerifySuccess('');
+                  }}
+                  style={{ marginTop: '12px' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+
+            {/* Phone Verification Section */}
+            {user.phone && !user.isPhoneVerified && isVerifyingPhone && (
+              <div className="verify-section">
+                {phoneVerifyError && <div className="form-error">{phoneVerifyError}</div>}
+                {phoneVerifySuccess && <div className="form-success">{phoneVerifySuccess}</div>}
+                
+                {!phoneOtpSent ? (
+                  <div className="verify-step">
+                    <p>Click below to send a verification code to <strong>{user.phone}</strong></p>
+                    <button
+                      className="btn-primary"
+                      onClick={handleSendPhoneOtp}
+                      disabled={phoneVerifyLoading}
+                    >
+                      {phoneVerifyLoading ? 'Sending...' : 'Send OTP'}
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleVerifyPhoneOtp} className="verify-form">
+                    <p>Enter the 6-digit code sent to <strong>{user.phone}</strong></p>
+                    <div className="otp-input-group">
+                      <input
+                        type="text"
+                        value={phoneOtpValue}
+                        onChange={(e) => setPhoneOtpValue(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        placeholder="Enter 6-digit OTP"
+                        maxLength={6}
+                        className="otp-input"
+                      />
+                      <button
+                        type="submit"
+                        className="btn-primary"
+                        disabled={phoneVerifyLoading || phoneOtpValue.length !== 6}
+                      >
+                        {phoneVerifyLoading ? 'Verifying...' : 'Verify'}
+                      </button>
+                    </div>
+                    <div className="resend-section">
+                      {phoneResendCooldown > 0 ? (
+                        <span className="resend-timer">Resend OTP in {phoneResendCooldown}s</span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn-link"
+                          onClick={handleResendPhoneOtp}
+                          disabled={phoneVerifyLoading}
+                        >
+                          Resend OTP
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                )}
+                
+                <button
+                  className="btn-outline btn-small"
+                  onClick={() => {
+                    setIsVerifyingPhone(false);
+                    setPhoneOtpSent(false);
+                    setPhoneOtpValue('');
+                    setPhoneVerifyError('');
+                    setPhoneVerifySuccess('');
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+            
             <div className="info-row">
               <span className="info-label">Subscription</span>
               <span className="info-value" style={{ textTransform: 'capitalize' }}>{user.tier}</span>
@@ -728,6 +1007,29 @@ export default function Profile() {
         .btn-small {
           padding: 8px 16px;
           font-size: 12px;
+        }
+
+        .phone-input-group {
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+          margin-bottom: 16px;
+        }
+
+        .phone-input {
+          flex: 1;
+          max-width: 200px;
+          padding: 12px 16px;
+          background: #0f172a;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          color: #f1f5f9;
+          font-size: 16px;
+        }
+
+        .phone-input:focus {
+          outline: none;
+          border-color: #3b82f6;
         }
       `}</style>
     </div>

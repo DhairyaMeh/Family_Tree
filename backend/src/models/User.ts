@@ -6,12 +6,16 @@ export type UserTier = 'free' | 'silver' | 'gold' | 'admin';
 export interface IUser extends Document {
   _id: string;
   username: string;
-  email: string;
+  email?: string;
+  phone?: string;
   password: string;
   tier: UserTier;
   isEmailVerified: boolean;
+  isPhoneVerified: boolean;
   emailOtp?: string;
   emailOtpExpiry?: Date;
+  phoneOtp?: string;
+  phoneOtpExpiry?: Date;
   googleId?: string;
   profileImage?: string;
   createdAt: Date;
@@ -33,9 +37,15 @@ const UserSchema = new Schema<IUser>(
     },
     email: { 
       type: String, 
-      required: true, 
-      unique: true, 
+      required: false, 
+      sparse: true,
       lowercase: true,
+      trim: true,
+    },
+    phone: {
+      type: String,
+      required: false,
+      sparse: true,
       trim: true,
     },
     password: { 
@@ -52,8 +62,14 @@ const UserSchema = new Schema<IUser>(
       type: Boolean, 
       default: false,
     },
+    isPhoneVerified: {
+      type: Boolean,
+      default: false,
+    },
     emailOtp: { type: String },
     emailOtpExpiry: { type: Date },
+    phoneOtp: { type: String },
+    phoneOtpExpiry: { type: Date },
     googleId: { type: String },
     profileImage: { type: String },
   },

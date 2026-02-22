@@ -63,12 +63,25 @@ body {
   pointer-events: none;
 }
 
+.app-header .header-link {
+  text-decoration: none;
+  pointer-events: auto;
+  display: inline-block;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.app-header .header-link:hover {
+  transform: scale(1.02);
+  opacity: 0.9;
+}
+
 .app-header h1 {
   font-family: 'Crimson Pro', Georgia, serif;
   font-size: 28px;
   font-weight: 600;
   color: #f1f5f9;
   letter-spacing: -0.5px;
+  margin: 0;
 }
 
 .app-header p {

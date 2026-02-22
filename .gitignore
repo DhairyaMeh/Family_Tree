@@ -11,6 +11,8 @@ build/
 .env
 .env.local
 .env.*.local
+**/.env
+**/. env.local
 
 # Logs
 *.log
@@ -31,4 +33,5 @@ coverage/
 # Misc
 *.local
 .cache
+
 

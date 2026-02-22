@@ -8,9 +8,11 @@ const API_URL = import.meta.env.VITE_API_URL || 'https://family-tree-api-nncf.on
 export default function Signup() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [signupMethod, setSignupMethod] = useState<'email' | 'phone'>('email');
   const [formData, setFormData] = useState({
     username: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
   });
@@ -31,6 +33,16 @@ export default function Signup() {
       return;
     }
 
+    // Validate contact method
+    if (signupMethod === 'email' && !formData.email) {
+      setError('Email is required');
+      return;
+    }
+    if (signupMethod === 'phone' && !formData.phone) {
+      setError('Phone number is required');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -39,7 +51,8 @@ export default function Signup() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: formData.username,
-          email: formData.email,
+          email: signupMethod === 'email' ? formData.email : undefined,
+          phone: signupMethod === 'phone' ? formData.phone : undefined,
           password: formData.password,
         }),
       });
@@ -91,16 +104,47 @@ export default function Signup() {
             />
           </div>
 
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="Enter your email"
-              required
-            />
+          {/* Signup Method Toggle */}
+          <div className="signup-method-toggle">
+            <button
+              type="button"
+              className={`toggle-btn ${signupMethod === 'email' ? 'active' : ''}`}
+              onClick={() => setSignupMethod('email')}
+            >
+              📧 Email
+            </button>
+            <button
+              type="button"
+              className={`toggle-btn ${signupMethod === 'phone' ? 'active' : ''}`}
+              onClick={() => setSignupMethod('phone')}
+            >
+              📱 Phone
+            </button>
           </div>
+
+          {signupMethod === 'email' ? (
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+          ) : (
+            <div className="form-group">
+              <label>Phone Number</label>
+              <input
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^0-9+]/g, '') })}
+                placeholder="+91 9876543210"
+                required
+              />
+            </div>
+          )}
 
           <div className="form-group">
             <label>Password</label>
@@ -274,6 +318,35 @@ export default function Signup() {
 
         .auth-footer a:hover {
           text-decoration: underline;
+        }
+
+        .signup-method-toggle {
+          display: flex;
+          gap: 8px;
+          background: #0f172a;
+          padding: 4px;
+          border-radius: 8px;
+        }
+
+        .toggle-btn {
+          flex: 1;
+          padding: 10px 16px;
+          background: transparent;
+          border: none;
+          border-radius: 6px;
+          color: #94a3b8;
+          font-size: 14px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .toggle-btn:hover {
+          color: #f1f5f9;
+        }
+
+        .toggle-btn.active {
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          color: white;
         }
       `}</style>
     </div>

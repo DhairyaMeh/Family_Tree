@@ -18,6 +18,9 @@ import {
   login,
   verifyOtp,
   resendOtp,
+  sendPhoneVerificationOtp,
+  verifyPhoneOtp,
+  resendPhoneOtp,
   googleAuth,
   getProfile,
   updateProfile,
@@ -34,6 +37,9 @@ const router = Router();
  * POST   /api/auth/login       - Login with username/password
  * POST   /api/auth/verify-otp  - Verify email OTP
  * POST   /api/auth/resend-otp  - Resend verification OTP
+ * POST   /api/auth/send-phone-otp  - Send phone verification OTP
+ * POST   /api/auth/verify-phone-otp - Verify phone OTP
+ * POST   /api/auth/resend-phone-otp - Resend phone verification OTP
  * POST   /api/auth/google      - Google OAuth login
  * GET    /api/auth/profile     - Get current user profile
  * PUT    /api/auth/profile     - Update user profile
@@ -59,6 +65,9 @@ router.post('/auth/signup', signup);
 router.post('/auth/login', login);
 router.post('/auth/verify-otp', verifyOtp);
 router.post('/auth/resend-otp', resendOtp);
+router.post('/auth/send-phone-otp', authenticate, sendPhoneVerificationOtp);
+router.post('/auth/verify-phone-otp', authenticate, verifyPhoneOtp);
+router.post('/auth/resend-phone-otp', authenticate, resendPhoneOtp);
 router.post('/auth/google', googleAuth);
 router.get('/auth/profile', authenticate, getProfile);
 router.put('/auth/profile', authenticate, updateProfile);

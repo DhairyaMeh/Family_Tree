@@ -3,9 +3,11 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 interface User {
   _id: string;
   username: string;
-  email: string;
+  email?: string;
+  phone?: string;
   tier: 'free' | 'silver' | 'gold' | 'admin';
   isEmailVerified: boolean;
+  isPhoneVerified: boolean;
   profileImage?: string;
 }
 

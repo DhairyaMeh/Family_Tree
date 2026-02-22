@@ -63,12 +63,12 @@ export default function Login() {
           {error && <div className="auth-error">{error}</div>}
           
           <div className="form-group">
-            <label>Username or Email</label>
+            <label>Username, Email, or Phone</label>
             <input
               type="text"
               value={formData.usernameOrEmail}
               onChange={(e) => setFormData({ ...formData, usernameOrEmail: e.target.value })}
-              placeholder="Enter username or email"
+              placeholder="Enter username, email, or phone"
               required
             />
           </div>
